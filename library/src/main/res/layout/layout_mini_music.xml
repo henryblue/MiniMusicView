@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="45dp"
+    android:background="#eeeeee" >
+
+    <ImageButton
+        android:clickable="false"
+        android:focusable="false"
+        android:id="@+id/iv_music_icon"
+        android:layout_width="45dp"
+        android:layout_height="match_parent"
+        android:background="#e0e0e0"
+        android:src="@drawable/music_icon"/>
+
+    <TextView
+        android:id="@+id/tv_music_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/iv_music_icon"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="3dp"
+        android:text="you my love"/>
+
+    <SeekBar
+        android:id="@+id/sb_progress"
+        android:layout_width="290dp"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/iv_music_icon"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="3dp"
+        android:focusable="false"
+        android:maxHeight="3dp"
+        android:minHeight="3dp"
+        android:progress="60"
+        android:progressDrawable="@drawable/progress_style"
+        android:thumb="@drawable/progress_thumb" />
+
+    <ImageButton
+        android:id="@+id/ib_control_btn"
+        android:layout_width="45dp"
+        android:layout_height="match_parent"
+        android:background="@null"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/play"/>
+
+</RelativeLayout>
