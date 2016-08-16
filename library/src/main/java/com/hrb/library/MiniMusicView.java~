@@ -232,10 +232,6 @@ public class MiniMusicView extends FrameLayout {
         }
     }
 
-    public boolean isPlaying() {
-        return mIsPlay;
-    }
-
     public interface OnMusicStateListener {
         void onPrepared(int duration);
         void onError();
@@ -301,16 +297,15 @@ public class MiniMusicView extends FrameLayout {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(action)) {
-                if (mIsPlay) {
-                    if (mMusicStateListener != null) {
-                        mMusicStateListener.onHeadsetPullOut();
-                    }
-                    if (!mIsAddView) {
-                        pausePlayMusic();
-                        changeControlBtnState(false);
-                    }
+                if (mMusicStateListener != null) {
+                    mMusicStateListener.onHeadsetPullOut();
+                }
+                if (!mIsAddView) {
+                    pausePlayMusic();
+                    changeControlBtnState(false);
                 }
             }
         }
+
     }
 }

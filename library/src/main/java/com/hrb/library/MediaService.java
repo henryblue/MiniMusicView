@@ -63,8 +63,7 @@ public class MediaService extends Service implements MediaPlayer.OnCompletionLis
             try {
                 mMediaPlayer.reset();
                 mMediaPlayer.setDataSource(path);
-                mMediaPlayer.prepare();
-                mMediaPlayer.start();
+                mMediaPlayer.prepareAsync();
                 if (mProgressTask == null) {
                     mProgressTask = new ProgressTask();
                     mProgressTask.execute();
@@ -158,6 +157,7 @@ public class MediaService extends Service implements MediaPlayer.OnCompletionLis
 
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
+        mediaPlayer.start();
         Intent intent = new Intent();
         intent.setAction(MUSIC_STATE_ACTION);
         intent.putExtra("state", STATE_MUSIC_PREPARE);
