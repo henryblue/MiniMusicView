@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="MiniMusicView">
+        <attr name="titleColor" format="reference|color" />
+        <attr name="titleTextSize" format="dimension" />
+        <attr name="musicBackgroundColor" format="reference|color" />
+        <attr name="musicIconBackgroundColor" format="reference|color" />
+        <attr name="musicIcon" format="reference"/>
+        <attr name="progressDrawable" format="reference" />
+    </declare-styleable>
+</resources>

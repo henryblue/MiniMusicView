@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="music_layout_height">45dp</dimen>
+    <dimen name="music_layout_title_marginLeft">15dp</dimen>
+    <dimen name="music_layout_title_marginTop">3dp</dimen>
+    <dimen name="music_layout_seek_bar_maxHeight">3dp</dimen>
+    <dimen name="music_layout_seek_bar_minHeight">3dp</dimen>
+    <dimen name="music_layout_seek_bar_marginBottom">5dp</dimen>
+</resources>

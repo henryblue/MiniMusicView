@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/ll_layout"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/music_layout_height"
+    android:layout_height="45dp"
+    android:background="#eeeeee"
     android:orientation="horizontal">
 
     <ImageButton
@@ -24,22 +25,22 @@
             android:id="@+id/tv_music_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/music_layout_title_marginTop"
-            android:layout_marginLeft="@dimen/music_layout_title_marginLeft"
+            android:layout_marginTop="3dp"
+            android:layout_marginLeft="15dp"
             android:layout_alignParentTop="true"
             android:ellipsize="end"
             android:singleLine="true"
-            android:text="@string/default_music_name" />
+            android:text="you my love" />
 
         <SeekBar
             android:id="@+id/sb_progress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/music_layout_seek_bar_marginBottom"
+            android:layout_marginBottom="5dp"
             android:layout_alignParentBottom="true"
             android:focusable="false"
-            android:maxHeight="@dimen/music_layout_seek_bar_maxHeight"
-            android:minHeight="@dimen/music_layout_seek_bar_minHeight"
+            android:maxHeight="3dp"
+            android:minHeight="3dp"
             android:progressDrawable="@drawable/progress_style"
             android:thumb="@null" />
     </RelativeLayout>
