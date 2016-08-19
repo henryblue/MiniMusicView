@@ -5,9 +5,9 @@
 
     <com.hrb.library.MiniMusicView
         android:id="@+id/mmv_music"
-        android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent" />
+
 
 </RelativeLayout>
 

@@ -21,7 +21,6 @@ import android.widget.Toast;
 
 public class MiniMusicView extends FrameLayout {
 
-    public static final String TAG = "MiniMusicView";
     private Context mContext;
     private LinearLayout mLayout;
     private ImageButton mIcon;
@@ -36,6 +35,7 @@ public class MiniMusicView extends FrameLayout {
     private MusicStateUpdateReceiver mMusicUpdateReceiver;
     private OnMusicStateListener mMusicStateListener;
     private HeadsetPlugReceiver mHeadsetPlugReceiver;
+    private int mMusicDuration;
 
     public MiniMusicView(Context context) {
         this(context, null);
@@ -172,6 +172,14 @@ public class MiniMusicView extends FrameLayout {
         mContext.sendBroadcast(mPauseIntent);
     }
 
+    public void seekToMusic(int pos) {
+        Intent intent = new Intent();
+        intent.setAction(MediaService.MUSIC_SERVICE_ACTION);
+        intent.putExtra("option", MediaService.OPTION_SEEK);
+        intent.putExtra("seekPos", pos);
+        mContext.sendBroadcast(intent);
+    }
+
     public void stopPlayMusic() {
         if (mServiceIntent != null) {
             mContext.stopService(mServiceIntent);
@@ -236,6 +244,10 @@ public class MiniMusicView extends FrameLayout {
         return mIsPlay;
     }
 
+    public int getMusicDuration() {
+        return mMusicDuration;
+    }
+
     public interface OnMusicStateListener {
         void onPrepared(int duration);
         void onError();
@@ -263,6 +275,7 @@ public class MiniMusicView extends FrameLayout {
                     if (!mIsAddView) {
                         Toast.makeText(mContext, getResources().getString(R.string.load_error),
                                 Toast.LENGTH_SHORT).show();
+                        changeControlBtnState(false);
                     }
                     break;
                 case MediaService.STATE_SEEK_COMPLETE:
@@ -271,12 +284,12 @@ public class MiniMusicView extends FrameLayout {
                     }
                     break;
                 case MediaService.STATE_MUSIC_PREPARE:
-                    int musicDuration = intent.getIntExtra("duration", -1);
+                    mMusicDuration = intent.getIntExtra("duration", -1);
                     if (mMusicStateListener != null) {
-                        mMusicStateListener.onPrepared(musicDuration);
+                        mMusicStateListener.onPrepared(mMusicDuration);
                     }
                     if (!mIsAddView) {
-                        setProgressMax(musicDuration);
+                        setProgressMax(mMusicDuration);
                     }
                     break;
                 case MediaService.STATE_PROGRESS_UPDATE:
