@@ -19,6 +19,72 @@ First you can add gradle dependency with command :
 ```
 To add gradle dependency you need to open build.gradle (in your app folder,not in a project folder) then copy and add the dependencies there in the dependencies block;
 
-1.Use default layout
+###Use default layout
 
-(1)Add MiniMusicView in your layout
+1.Add MiniMusicView in your layout
+```
+    <com.hrb.library.MiniMusicView
+        android:id="@+id/mmv_music"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+```
+2.set music url and play music
+```
+   mMusicView = (MiniMusicView) findViewById(R.id.mmv_music);
+   mMusicView.setTitleText("Night Divides The Girls-Halou");
+   mMusicView.startPlayMusic("http://luoo-mp3.kssws.ks-cdn.com/low/luoo/radio847/06.mp3");
+```
+3.stop play music
+```
+    @Override
+    protected void onDestroy() {
+        mMusicView.stopPlayMusic();
+        super.onDestroy();
+    }
+```
+Achieve the effect of the first picture above.
+
+###Use custom layout
+1.set layout, music url and play music
+```
+   mMusicView = (MiniMusicView) findViewById(R.id.mmv_music);
+   View view = View.inflate(CustomActivity.this, R.layout.layout_custom_music, null);
+   TextView title = (TextView) view.findViewById(R.id.tv_music_play_title);
+   title.setText("Night Divides The Girls-Halou");
+   mMusicView.addView(view);
+   mMusicView.startPlayMusic("http://luoo-mp3.kssws.ks-cdn.com/low/luoo/radio847/06.mp3");
+```
+2.you can also set MiniMusicView listener
+```
+   mMusicView.setOnMusicStateListener(new MiniMusicView.OnMusicStateListener() {
+            @Override
+            public void onPrepared(int duration) {
+                Log.i(TAG, "start prepare play music");
+            }
+
+            @Override
+            public void onError() {
+                Log.i(TAG, "start play music error");
+            }
+
+            @Override
+            public void onMusicPlayComplete() {
+                Log.i(TAG, "start play music completed");
+            }
+
+            @Override
+            public void onSeekComplete() {
+                Log.i(TAG, "seek play music completed");
+            }
+
+            @Override
+            public void onProgressUpdate(int duration, int currentPos) {
+                Log.i(TAG, "play music progress update");
+            }
+
+            @Override
+            public void onHeadsetPullOut() {
+                Log.i(TAG, "headset pull out");
+            }
+        });
+```
