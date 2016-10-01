@@ -127,10 +127,10 @@ public class MiniMusicView extends FrameLayout {
     public void changeControlBtnState(boolean isPlay) {
         if (!mIsAddView && mControlBtn != null) {
             if (isPlay) {
-                mControlBtn.setImageResource(R.drawable.pause);
+                mControlBtn.setImageResource(R.drawable.pause_mini_music);
                 mIsPlay = true;
             } else {
-                mControlBtn.setImageResource(R.drawable.play);
+                mControlBtn.setImageResource(R.drawable.play_mini_music);
                 mIsPlay = false;
             }
         }

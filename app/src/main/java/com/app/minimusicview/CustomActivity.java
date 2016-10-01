@@ -47,28 +47,28 @@ public class CustomActivity extends Activity implements View.OnClickListener {
         mMusicView.setOnMusicStateListener(new MiniMusicView.OnMusicStateListener() {
             @Override
             public void onPrepared(int duration) {
-                Log.i(TAG, "start prepare play music");
+                Log.i(TAG, "start prepare play_mini_music music");
             }
 
             @Override
             public void onError() {
-                Log.i(TAG, "start play music error");
+                Log.i(TAG, "start play_mini_music music error");
                 Toast.makeText(CustomActivity.this, "加载音乐出错", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onMusicPlayComplete() {
-                Log.i(TAG, "start play music completed");
+                Log.i(TAG, "start play_mini_music music completed");
             }
 
             @Override
             public void onSeekComplete() {
-                Log.i(TAG, "seek play music completed");
+                Log.i(TAG, "seek play_mini_music music completed");
             }
 
             @Override
             public void onProgressUpdate(int duration, int currentPos) {
-                Log.i(TAG, "play music progress update");
+                Log.i(TAG, "play_mini_music music progress update");
             }
 
             @Override
