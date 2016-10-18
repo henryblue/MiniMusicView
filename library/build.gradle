@@ -3,7 +3,7 @@ ext {
     bintrayRepo = 'maven'
     bintrayName = 'MiniMusicView'
 
-    publishedGroupId = 'com.github.henryblue'
+    publishedGroupId = 'com.henblue.minimusicview'
     libraryName = 'library'
     artifact = 'library'
 
@@ -12,7 +12,7 @@ ext {
     siteUrl = 'https://github.com/henry-blue/MiniMusicView'
     gitUrl = 'https://github.com/henry-blue/MiniMusicView.git'
 
-    libraryVersion = '1.0.0'
+    libraryVersion = '1.0.1'
 
     developerId = 'henry'
     developerName = 'henry-blue'

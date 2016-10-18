@@ -26,8 +26,8 @@ public class MediaService extends Service implements MediaPlayer.OnCompletionLis
     public static final int STATE_PROGRESS_UPDATE = 7;
     public static final int STATE_MUSIC_PREPARE = 8;
 
-    public static final String MUSIC_SERVICE_ACTION = "com.media.service.action";
-    public static final String MUSIC_STATE_ACTION = "com.media.music.state.action";
+    public static final String MUSIC_SERVICE_ACTION = "com.mini.media.service.action";
+    public static final String MUSIC_STATE_ACTION = "com.mini.media.music.state.action";
     private static MediaPlayer mMediaPlayer;
     private MusicServiceReceiver mMusicServiceReceiver;
     private int mCurrPlayPosition = 0;

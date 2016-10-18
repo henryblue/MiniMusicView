@@ -55,6 +55,9 @@ public class MiniMusicView extends FrameLayout {
     }
 
     private void initAttributeSet(AttributeSet attrs) {
+        if (attrs == null) {
+            return;
+        }
         TypedArray arr = mContext.obtainStyledAttributes(attrs, R.styleable.MiniMusicView);
         final int titleColor = arr.getColor(R.styleable.MiniMusicView_titleColor, Color.parseColor("#000000"));
         setTitleColor(titleColor);
