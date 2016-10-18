@@ -26,8 +26,13 @@ To add gradle dependency you need to open build.gradle (in your app folder,not i
 2.set music url and play music
 ```
    mMusicView = (MiniMusicView) findViewById(R.id.mmv_music);
-   mMusicView.setTitleText("Night Divides The Girls-Halou");
-   mMusicView.startPlayMusic("http://luoo-mp3.kssws.ks-cdn.com/low/luoo/radio847/06.mp3");
+   mMusicView.setTitleText("music name");
+   mMusicView.startPlayMusic("music url");
+   
+   // Or through the new way to create view object
+   mMusicView = new MiniMusicView(this);
+   mMusicView.setTitleText("music name");
+   mMusicView.startPlayMusic("music url");
 ```
 3.stop play music
 ```
@@ -45,9 +50,9 @@ Achieve the effect of the first picture above.
    mMusicView = (MiniMusicView) findViewById(R.id.mmv_music);
    View view = View.inflate(CustomActivity.this, R.layout.layout_custom_music, null);
    TextView title = (TextView) view.findViewById(R.id.tv_music_play_title);
-   title.setText("Night Divides The Girls-Halou");
+   title.setText("music name");
    mMusicView.addView(view);
-   mMusicView.startPlayMusic("http://luoo-mp3.kssws.ks-cdn.com/low/luoo/radio847/06.mp3");
+   mMusicView.startPlayMusic("music url");
 ```
 2.you can also set MiniMusicView listener
 ```
