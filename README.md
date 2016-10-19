@@ -8,7 +8,7 @@ First you can add gradle dependency with command :
 ```groovy
 dependencies {
     ......
-    compile 'com.henblue.minimusicview:library:1.0.1'
+    compile 'com.henblue.minimusicview:library:0.9.5'
    }
 
 ```
