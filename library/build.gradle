@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 ext {
     bintrayRepo = 'maven'
-    bintrayName = 'MiniMusicView'
+    bintrayName = 'miniMusicView'
 
     publishedGroupId = 'com.henblue.minimusicview'
     libraryName = 'library'
@@ -12,7 +12,7 @@ ext {
     siteUrl = 'https://github.com/henry-blue/MiniMusicView'
     gitUrl = 'https://github.com/henry-blue/MiniMusicView.git'
 
-    libraryVersion = '1.0.1'
+    libraryVersion = '0.9.5'
 
     developerId = 'henry'
     developerName = 'henry-blue'
