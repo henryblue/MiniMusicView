@@ -63,6 +63,10 @@ public class MiniMusicView extends FrameLayout {
             return;
         }
         TypedArray arr = mContext.obtainStyledAttributes(attrs, R.styleable.MiniMusicView);
+        final boolean isLoadLayout = arr.getBoolean(R.styleable.MiniMusicView_isLoadLayout, false);
+        if (isLoadLayout) {
+            initDefaultView();
+        }
         final int titleColor = arr.getColor(R.styleable.MiniMusicView_titleColor, Color.parseColor("#000000"));
         setTitleColor(titleColor);
         final int titleSize = arr.getDimensionPixelOffset(R.styleable.MiniMusicView_titleTextSize, -1);
@@ -92,21 +96,24 @@ public class MiniMusicView extends FrameLayout {
         initReceiver();
     }
 
-    private void initDefaultView() {
-        View view = mViewStub.inflate();
-        mLayout = (LinearLayout) view.findViewById(R.id.ll_layout);
-        mIcon = (ImageButton) view.findViewById(R.id.iv_music_icon);
-        mControlBtn = (ImageButton) view.findViewById(R.id.ib_control_btn);
-        mLoadMusic = (ProgressBar) view.findViewById(R.id.pb_loading);
-        mMusicTitle = (TextView) view.findViewById(R.id.tv_music_title);
-        mProgressBar = (SeekBar) view.findViewById(R.id.sb_progress);
+    public void initDefaultView() {
+        if (mViewStub != null) {
+            View view = mViewStub.inflate();
+            mLayout = (LinearLayout) view.findViewById(R.id.ll_layout);
+            mIcon = (ImageButton) view.findViewById(R.id.iv_music_icon);
+            mControlBtn = (ImageButton) view.findViewById(R.id.ib_control_btn);
+            mLoadMusic = (ProgressBar) view.findViewById(R.id.pb_loading);
+            mMusicTitle = (TextView) view.findViewById(R.id.tv_music_title);
+            mProgressBar = (SeekBar) view.findViewById(R.id.sb_progress);
 
-        mControlBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onControlBtnClick(view);
-            }
-        });
+            mControlBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onControlBtnClick(view);
+                }
+            });
+            mViewStub = null;
+        }
     }
 
     private void initReceiver() {
@@ -157,10 +164,6 @@ public class MiniMusicView extends FrameLayout {
     }
 
     public void startPlayMusic(String path) {
-        if (!mIsAddView) {
-            initDefaultView();
-        }
-
         if (mServiceIntent == null) {
             mServiceIntent = new Intent(mContext, MediaService.class);
             mServiceIntent.putExtra("option", MediaService.OPTION_PLAY);

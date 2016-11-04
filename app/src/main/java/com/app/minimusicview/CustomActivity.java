@@ -42,7 +42,7 @@ public class CustomActivity extends Activity implements View.OnClickListener {
         nextBtn.setOnClickListener(this);
 
         mMusicView.addView(view);
-        mMusicView.startPlayMusic("http://luoo-mp3.kssws.ks-cdn.com/low/luoo/radio847/06.mp3");
+        mMusicView.startPlayMusic("http://mp3-cdn.luoo.net/low/luoo/radio847/02.mp3");
 
         mMusicView.setOnMusicStateListener(new MiniMusicView.OnMusicStateListener() {
             @Override

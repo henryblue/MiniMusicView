@@ -14,8 +14,9 @@ public class DefaultActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mMusicView = (MiniMusicView) findViewById(R.id.mmv_music);
-        mMusicView.startPlayMusic("http://luoo-mp3.kssws.ks-cdn.com/low/luoo/radio847/06.mp3");
+        mMusicView.initDefaultView();
         mMusicView.setTitleText("Night Divides The Girls-Halou");
+        mMusicView.startPlayMusic("http://mp3-cdn.luoo.net/low/luoo/radio847/02.mp3");
     }
 
     @Override

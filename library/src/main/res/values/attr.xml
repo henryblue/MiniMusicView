@@ -7,5 +7,6 @@
         <attr name="musicIconBackgroundColor" format="reference|color" />
         <attr name="musicIcon" format="reference"/>
         <attr name="progressDrawable" format="reference" />
+        <attr name="isLoadLayout" format="boolean" />
     </declare-styleable>
 </resources>
