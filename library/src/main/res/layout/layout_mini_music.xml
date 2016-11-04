@@ -18,25 +18,25 @@
     <RelativeLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="6" >
+        android:layout_weight="6">
 
         <TextView
             android:id="@+id/tv_music_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/music_layout_title_marginTop"
-            android:layout_marginLeft="@dimen/music_layout_title_marginLeft"
             android:layout_alignParentTop="true"
+            android:layout_marginLeft="@dimen/music_layout_title_marginLeft"
+            android:layout_marginTop="@dimen/music_layout_title_marginTop"
             android:ellipsize="end"
-            android:singleLine="true"
+            android:maxLines="1"
             android:text="@string/default_music_name" />
 
         <SeekBar
             android:id="@+id/sb_progress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/music_layout_seek_bar_marginBottom"
             android:layout_alignParentBottom="true"
+            android:layout_marginBottom="@dimen/music_layout_seek_bar_marginBottom"
             android:focusable="false"
             android:maxHeight="@dimen/music_layout_seek_bar_maxHeight"
             android:minHeight="@dimen/music_layout_seek_bar_minHeight"
@@ -44,12 +44,25 @@
             android:thumb="@null" />
     </RelativeLayout>
 
-    <ImageButton
-        android:id="@+id/ib_control_btn"
+    <RelativeLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="@null"
-        android:src="@drawable/pause_mini_music" />
+        android:layout_weight="1">
+
+        <ImageButton
+            android:id="@+id/ib_control_btn"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:background="@null"
+            android:src="@drawable/pause_mini_music" />
+
+        <ProgressBar
+            android:id="@+id/pb_loading"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/music_layout_loading_pg_margin" />
+
+    </RelativeLayout>
 
 </LinearLayout>

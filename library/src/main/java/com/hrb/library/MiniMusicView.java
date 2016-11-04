@@ -12,9 +12,11 @@ import android.media.AudioManager;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewStub;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,9 +24,11 @@ import android.widget.Toast;
 public class MiniMusicView extends FrameLayout {
 
     private Context mContext;
+    private ViewStub mViewStub;
     private LinearLayout mLayout;
     private ImageButton mIcon;
     private ImageButton mControlBtn;
+    private ProgressBar mLoadMusic;
     private TextView mMusicTitle;
     private SeekBar mProgressBar;
     private boolean mIsAddView;
@@ -83,12 +87,19 @@ public class MiniMusicView extends FrameLayout {
     }
 
     private void initView() {
-        View.inflate(mContext, R.layout.layout_mini_music, this);
-        mLayout = (LinearLayout) this.findViewById(R.id.ll_layout);
-        mIcon = (ImageButton) this.findViewById(R.id.iv_music_icon);
-        mControlBtn = (ImageButton) this.findViewById(R.id.ib_control_btn);
-        mMusicTitle = (TextView) this.findViewById(R.id.tv_music_title);
-        mProgressBar = (SeekBar) this.findViewById(R.id.sb_progress);
+        View.inflate(mContext, R.layout.layout_default_viewstup, this);
+        mViewStub = (ViewStub) findViewById(R.id.vs_mini_view);
+        initReceiver();
+    }
+
+    private void initDefaultView() {
+        View view = mViewStub.inflate();
+        mLayout = (LinearLayout) view.findViewById(R.id.ll_layout);
+        mIcon = (ImageButton) view.findViewById(R.id.iv_music_icon);
+        mControlBtn = (ImageButton) view.findViewById(R.id.ib_control_btn);
+        mLoadMusic = (ProgressBar) view.findViewById(R.id.pb_loading);
+        mMusicTitle = (TextView) view.findViewById(R.id.tv_music_title);
+        mProgressBar = (SeekBar) view.findViewById(R.id.sb_progress);
 
         mControlBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,7 +107,9 @@ public class MiniMusicView extends FrameLayout {
                 onControlBtnClick(view);
             }
         });
+    }
 
+    private void initReceiver() {
         mMusicUpdateReceiver = new MusicStateUpdateReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(MediaService.MUSIC_STATE_ACTION);
@@ -110,7 +123,7 @@ public class MiniMusicView extends FrameLayout {
         mContext.registerReceiver(mHeadsetPlugReceiver, intentFilter);
     }
 
-    private void onControlBtnClick(View view) {
+    private void onControlBtnClick(View v) {
         if (mIsPlay) {
             pausePlayMusic();
             changeControlBtnState(false);
@@ -138,11 +151,16 @@ public class MiniMusicView extends FrameLayout {
             }
         }
     }
+
     public void setOnMusicStateListener(OnMusicStateListener listener) {
         mMusicStateListener = listener;
     }
 
     public void startPlayMusic(String path) {
+        if (!mIsAddView) {
+            initDefaultView();
+        }
+
         if (mServiceIntent == null) {
             mServiceIntent = new Intent(mContext, MediaService.class);
             mServiceIntent.putExtra("option", MediaService.OPTION_PLAY);
@@ -278,6 +296,10 @@ public class MiniMusicView extends FrameLayout {
                     if (!mIsAddView) {
                         Toast.makeText(mContext, getResources().getString(R.string.load_error),
                                 Toast.LENGTH_SHORT).show();
+                        mLoadMusic.setVisibility(View.GONE);
+                        if (mControlBtn.getVisibility() != View.VISIBLE) {
+                            mControlBtn.setVisibility(View.VISIBLE);
+                        }
                         changeControlBtnState(false);
                     }
                     break;
@@ -292,6 +314,8 @@ public class MiniMusicView extends FrameLayout {
                         mMusicStateListener.onPrepared(mMusicDuration);
                     }
                     if (!mIsAddView) {
+                        mLoadMusic.setVisibility(View.GONE);
+                        mControlBtn.setVisibility(View.VISIBLE);
                         setProgressMax(mMusicDuration);
                     }
                     break;

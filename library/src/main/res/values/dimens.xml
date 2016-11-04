@@ -6,4 +6,5 @@
     <dimen name="music_layout_seek_bar_maxHeight">3dp</dimen>
     <dimen name="music_layout_seek_bar_minHeight">3dp</dimen>
     <dimen name="music_layout_seek_bar_marginBottom">5dp</dimen>
+    <dimen name="music_layout_loading_pg_margin">8dp</dimen>
 </resources>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ViewStub xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/vs_mini_view"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/music_layout_height"
+    android:layout="@layout/layout_mini_music"/>
