@@ -8,7 +8,7 @@ First you can add gradle dependency with command :
 ```groovy
 dependencies {
     ......
-    compile 'com.henblue.minimusicview:library:1.0.1'
+    compile 'com.henryblue.minimusicview:library:0.9.5'
    }
 
 ```
@@ -20,6 +20,7 @@ To add gradle dependency you need to open build.gradle (in your app folder,not i
 ```
     <com.hrb.library.MiniMusicView
         android:id="@+id/mmv_music"
+        app:isLoadLayout="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 ```
@@ -30,9 +31,10 @@ To add gradle dependency you need to open build.gradle (in your app folder,not i
    mMusicView.startPlayMusic("music url");
    
    // Or through the new way to create view object
-   mMusicView = new MiniMusicView(this);
-   mMusicView.setTitleText("music name");
-   mMusicView.startPlayMusic("music url");
+   // mMusicView = new MiniMusicView(this);
+   // mMusicView.initDefaultView();
+   // mMusicView.setTitleText("music name");
+   // mMusicView.startPlayMusic("music url");
 ```
 3.stop play music
 ```
@@ -45,7 +47,14 @@ To add gradle dependency you need to open build.gradle (in your app folder,not i
 Achieve the effect of the first picture above.
 
 ###Use custom layout
-1.set layout, music url and play music
+1.Add MiniMusicView in your layout
+```
+    <com.hrb.library.MiniMusicView
+        android:id="@+id/mmv_music"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+```
+2.set layout, music url and play music
 ```
    mMusicView = (MiniMusicView) findViewById(R.id.mmv_music);
    View view = View.inflate(CustomActivity.this, R.layout.layout_custom_music, null);
@@ -53,8 +62,12 @@ Achieve the effect of the first picture above.
    title.setText("music name");
    mMusicView.addView(view);
    mMusicView.startPlayMusic("music url");
+   // Or through the new way to create view object
+   // mMusicView = new MiniMusicView(this);
+   // mMusicView.addView(view);
+   // mMusicView.startPlayMusic("music url");
 ```
-2.you can also set MiniMusicView listener
+3.you can also set MiniMusicView listener
 ```
    mMusicView.setOnMusicStateListener(new MiniMusicView.OnMusicStateListener() {
             @Override
