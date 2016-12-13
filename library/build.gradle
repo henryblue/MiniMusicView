@@ -3,7 +3,7 @@ ext {
     bintrayRepo = 'maven'
     bintrayName = 'miniMusicView'
 
-    publishedGroupId = 'com.henblue.minimusicview'
+    publishedGroupId = 'com.henryblue.minimusicview'
     libraryName = 'library'
     artifact = 'library'
 

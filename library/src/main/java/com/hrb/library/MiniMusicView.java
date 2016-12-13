@@ -14,10 +14,9 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.SeekBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,12 +24,13 @@ public class MiniMusicView extends FrameLayout {
 
     private Context mContext;
     private ViewStub mViewStub;
-    private LinearLayout mLayout;
-    private ImageButton mIcon;
-    private ImageButton mControlBtn;
+    private RelativeLayout mLayout;
+    private ImageView mIcon;
+    private ImageView mControlBtn;
     private ProgressBar mLoadMusic;
     private TextView mMusicTitle;
-    private SeekBar mProgressBar;
+    private TextView mMusicAuthor;
+    private ProgressBar mProgressBar;
     private boolean mIsAddView;
     private Intent mServiceIntent;
     private Intent mPauseIntent;
@@ -73,11 +73,9 @@ public class MiniMusicView extends FrameLayout {
         if (titleSize != -1) {
             setTitleTextSize(titleSize);
         }
-        final int iconBgColor = arr.getColor(R.styleable.MiniMusicView_musicIconBackgroundColor, Color.parseColor("#e0e0e0"));
-        setIconBackgroundColor(iconBgColor);
 
-        final int backColor = arr.getColor(R.styleable.MiniMusicView_musicBackgroundColor, Color.parseColor("#eeeeee"));
-        setMusicBackgroundColor(backColor);
+        final int bgColor = arr.getColor(R.styleable.MiniMusicView_musicBackgroundColor, Color.parseColor("#eeeeee"));
+        setMusicBackgroundColor(bgColor);
 
         final Drawable progressDrawable = arr.getDrawable(R.styleable.MiniMusicView_progressDrawable);
         if (progressDrawable != null) {
@@ -99,12 +97,13 @@ public class MiniMusicView extends FrameLayout {
     public void initDefaultView() {
         if (mViewStub != null) {
             View view = mViewStub.inflate();
-            mLayout = (LinearLayout) view.findViewById(R.id.ll_layout);
-            mIcon = (ImageButton) view.findViewById(R.id.iv_music_icon);
-            mControlBtn = (ImageButton) view.findViewById(R.id.ib_control_btn);
+            mLayout = (RelativeLayout) view.findViewById(R.id.ll_layout);
+            mIcon = (ImageView) view.findViewById(R.id.iv_music_icon);
+            mControlBtn = (ImageView) view.findViewById(R.id.iv_control_btn);
             mLoadMusic = (ProgressBar) view.findViewById(R.id.pb_loading);
             mMusicTitle = (TextView) view.findViewById(R.id.tv_music_title);
-            mProgressBar = (SeekBar) view.findViewById(R.id.sb_progress);
+            mMusicAuthor = (TextView) view.findViewById(R.id.tv_music_author);
+            mProgressBar = (ProgressBar) view.findViewById(R.id.pb_progress);
 
             mControlBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -150,10 +149,10 @@ public class MiniMusicView extends FrameLayout {
     public void changeControlBtnState(boolean isPlay) {
         if (!mIsAddView && mControlBtn != null) {
             if (isPlay) {
-                mControlBtn.setImageResource(R.drawable.pause_mini_music);
+                mControlBtn.setImageResource(R.drawable.mini_btn_pause);
                 mIsPlay = true;
             } else {
-                mControlBtn.setImageResource(R.drawable.play_mini_music);
+                mControlBtn.setImageResource(R.drawable.mini_btn_play);
                 mIsPlay = false;
             }
         }
@@ -228,12 +227,6 @@ public class MiniMusicView extends FrameLayout {
         }
     }
 
-    public void setIconBackgroundColor(int color) {
-        if (!mIsAddView && mIcon != null) {
-            mIcon.setBackgroundColor(color);
-        }
-    }
-
     public void setMusicBackgroundColor(int color) {
         if (!mIsAddView && mLayout != null) {
             mLayout.setBackgroundColor(color);
@@ -261,6 +254,12 @@ public class MiniMusicView extends FrameLayout {
     public void setTitleText(String text) {
         if (!mIsAddView && mMusicTitle != null) {
             mMusicTitle.setText(text);
+        }
+    }
+
+    public void setAuthor(String text) {
+        if (!mIsAddView && mMusicAuthor != null) {
+            mMusicAuthor.setText(text);
         }
     }
 

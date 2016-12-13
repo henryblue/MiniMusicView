@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="music_layout_height">45dp</dimen>
-    <dimen name="music_layout_title_marginLeft">15dp</dimen>
-    <dimen name="music_layout_title_marginTop">3dp</dimen>
-    <dimen name="music_layout_seek_bar_maxHeight">3dp</dimen>
-    <dimen name="music_layout_seek_bar_minHeight">3dp</dimen>
-    <dimen name="music_layout_seek_bar_marginBottom">5dp</dimen>
-    <dimen name="music_layout_loading_pg_margin">8dp</dimen>
+    <dimen name="music_layout_height">50dp</dimen>
+    <dimen name="music_layout_control_height">40dp</dimen>
+    <dimen name="music_layout_info_marginLeft">5dp</dimen>
+    <dimen name="music_layout_title_textSize">15sp</dimen>
+    <dimen name="music_layout_author_textSize">13sp</dimen>
+    <dimen name="music_layout_icon_marginLeft">5dp</dimen>
+    <dimen name="music_layout_next_btn_width">50dp</dimen>
+    <dimen name="music_layout_iv_control_width">40dp</dimen>
+    <dimen name="music_layout_pb_loading_width">34dp</dimen>
+    <dimen name="music_layout_progress_height">2dp</dimen>
+    <dimen name="music_layout_icon_width">38dp</dimen>
+    <dimen name="music_layout_icon_height">38dp</dimen>
+    <dimen name="music_layout_info_marginTop">5dp</dimen>
 </resources>
