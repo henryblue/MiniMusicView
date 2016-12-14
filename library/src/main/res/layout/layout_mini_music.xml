@@ -4,8 +4,8 @@
     android:id="@+id/ll_layout"
     android:layout_width="match_parent"
     android:layout_height="@dimen/music_layout_height"
-    android:background="@android:color/white"
-    tools:ignore="ContentDescription">
+    android:background="@color/transparent"
+    tools:targetApi="lollipop">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -25,7 +25,6 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginLeft="@dimen/music_layout_info_marginLeft"
-            android:layout_marginTop="@dimen/music_layout_info_marginTop"
             android:layout_weight="5"
             android:orientation="vertical">
 
@@ -50,20 +49,21 @@
         </LinearLayout>
 
         <RelativeLayout
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/music_layout_loading_width"
             android:layout_height="match_parent">
 
             <ImageView
                 android:id="@+id/iv_control_btn"
-                android:layout_width="@dimen/music_layout_iv_control_width"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerCrop"
                 android:src="@drawable/mini_btn_pause"
                 android:visibility="gone"/>
 
             <ProgressBar
                 android:id="@+id/pb_loading"
-                android:layout_width="@dimen/music_layout_pb_loading_width"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:indeterminateDrawable="@drawable/progress_rotate_style" />
         </RelativeLayout>
@@ -72,6 +72,7 @@
             android:id="@+id/iv_next_btn"
             android:layout_width="@dimen/music_layout_next_btn_width"
             android:layout_height="match_parent"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
             android:scaleType="centerCrop"
             android:src="@drawable/mini_btn_next" />
     </LinearLayout>

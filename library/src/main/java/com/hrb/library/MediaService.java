@@ -14,7 +14,7 @@ import android.text.TextUtils;
 
 public class MediaService extends Service implements MediaPlayer.OnCompletionListener,
         MediaPlayer.OnErrorListener, MediaPlayer.OnBufferingUpdateListener,
-        MediaPlayer.OnSeekCompleteListener, MediaPlayer.OnPreparedListener {
+        MediaPlayer.OnSeekCompleteListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnInfoListener {
 
     public static final int OPTION_PLAY = 0;
     public static final int OPTION_PAUSE = 1;
@@ -25,9 +25,11 @@ public class MediaService extends Service implements MediaPlayer.OnCompletionLis
     public static final int STATE_SEEK_COMPLETE = 6;
     public static final int STATE_PROGRESS_UPDATE = 7;
     public static final int STATE_MUSIC_PREPARE = 8;
+    public static final int STATE_PLAY_INFO = 9;
 
     public static final String MUSIC_SERVICE_ACTION = "com.mini.media.service.action";
     public static final String MUSIC_STATE_ACTION = "com.mini.media.music.state.action";
+
     private static MediaPlayer mMediaPlayer;
     private MusicServiceReceiver mMusicServiceReceiver;
     private int mCurrPlayPosition = 0;
@@ -50,6 +52,7 @@ public class MediaService extends Service implements MediaPlayer.OnCompletionLis
             mMediaPlayer.setOnErrorListener(this);
             mMediaPlayer.setOnSeekCompleteListener(this);
             mMediaPlayer.setOnPreparedListener(this);
+            mMediaPlayer.setOnInfoListener(this);
         }
 
         if (mMusicServiceReceiver == null) {
@@ -141,10 +144,23 @@ public class MediaService extends Service implements MediaPlayer.OnCompletionLis
     }
 
     @Override
-    public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
+    public boolean onError(MediaPlayer mediaPlayer, int what, int extra) {
         Intent intent = new Intent();
         intent.setAction(MUSIC_STATE_ACTION);
         intent.putExtra("state", STATE_PLAY_ERROR);
+        intent.putExtra("what", what);
+        intent.putExtra("extra", extra);
+        sendBroadcast(intent);
+        return false;
+    }
+
+    @Override
+    public boolean onInfo(MediaPlayer mp, int what, int extra) {
+        Intent intent = new Intent();
+        intent.setAction(MUSIC_STATE_ACTION);
+        intent.putExtra("state", STATE_PLAY_INFO);
+        intent.putExtra("what", what);
+        intent.putExtra("extra", extra);
         sendBroadcast(intent);
         return false;
     }

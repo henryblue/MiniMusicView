@@ -7,10 +7,8 @@
     <dimen name="music_layout_author_textSize">13sp</dimen>
     <dimen name="music_layout_icon_marginLeft">5dp</dimen>
     <dimen name="music_layout_next_btn_width">50dp</dimen>
-    <dimen name="music_layout_iv_control_width">40dp</dimen>
-    <dimen name="music_layout_pb_loading_width">34dp</dimen>
     <dimen name="music_layout_progress_height">2dp</dimen>
     <dimen name="music_layout_icon_width">38dp</dimen>
     <dimen name="music_layout_icon_height">38dp</dimen>
-    <dimen name="music_layout_info_marginTop">5dp</dimen>
+    <dimen name="music_layout_loading_width">40dp</dimen>
 </resources>

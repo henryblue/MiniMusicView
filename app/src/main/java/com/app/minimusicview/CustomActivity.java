@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,16 +24,17 @@ public class CustomActivity extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        mMusicView = (MiniMusicView) findViewById(R.id.mmv_music);
-
+        mMusicView = new MiniMusicView(this);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
+        addContentView(mMusicView, params);
         init();
     }
 
     private void init() {
         View view = View.inflate(CustomActivity.this, R.layout.layout_custom_music, null);
         TextView title = (TextView) view.findViewById(R.id.tv_music_play_title);
-        title.setText("Night Divides The Girls-Halou");
+        title.setText("前前前世");
         controlBtn = (ImageButton) view.findViewById(R.id.ib_play);
         controlBtn.setOnClickListener(this);
 
@@ -42,7 +45,7 @@ public class CustomActivity extends Activity implements View.OnClickListener {
         nextBtn.setOnClickListener(this);
 
         mMusicView.addView(view);
-        mMusicView.startPlayMusic("http://mp3-cdn.luoo.net/low/luoo/radio847/02.mp3");
+        mMusicView.startPlayMusic("http://up.haoduoge.com:82/mp3/2016-10-07/1475810104.mp3");
 
         mMusicView.setOnMusicStateListener(new MiniMusicView.OnMusicStateListener() {
             @Override
@@ -51,9 +54,14 @@ public class CustomActivity extends Activity implements View.OnClickListener {
             }
 
             @Override
-            public void onError() {
+            public void onError(int what, int extra) {
                 Log.i(TAG, "start play_mini_music music error");
                 Toast.makeText(CustomActivity.this, "加载音乐出错", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onInfo(int what, int extra) {
+                Log.i(TAG, "start play_mini_music music info");
             }
 
             @Override

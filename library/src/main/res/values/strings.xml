@@ -2,7 +2,4 @@
     <string name="app_name">Library</string>
     <string name="load_error">加载音乐出错</string>
     <string name="default_music_name">unknown</string>
-    <color name="progress_color">#d81e06</color>
-    <color name="secProgress_color">#ffe0e0e0</color>
-    <color name="solid_color">#4c000000</color>
 </resources>

@@ -5,14 +5,12 @@
     android:background="@color/colorPrimary"
     android:orientation="vertical">
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_gravity="center"
         android:layout_marginTop="70dp"
-        android:scaleType="centerCrop"
         android:src="@drawable/img_bg"/>
-
 
     <TextView
         android:id="@+id/tv_music_play_title"
@@ -21,7 +19,7 @@
         android:layout_marginTop="70dp"
         android:gravity="center"
         android:textColor="@android:color/primary_text_dark"
-        android:singleLine="true"
+        android:maxLines="1"
         android:ellipsize="end"
         android:textSize="18sp"
         android:textStyle="bold" />
