@@ -1,14 +1,14 @@
 # MiniMusicView
 A music player widget to add custom layout.
 ##ScreenShot
-![](https://github.com/henry-blue/MiniMusicView/raw/master/default_bg.png)......
-![](https://github.com/henry-blue/MiniMusicView/raw/master/custom_bg.png)
+![](https://github.com/henry-blue/MiniMusicView/raw/master/default_bg_new.png)...
+![](https://github.com/henry-blue/MiniMusicView/raw/master/custom_bg_new.png)
 ##Usage
 First you can add gradle dependency with command :
 ```groovy
 dependencies {
     ......
-    compile 'com.henryblue.minimusicview:library:0.9.5'
+    compile 'com.henryblue.minimusicview:library:0.9.8'
    }
 
 ```
