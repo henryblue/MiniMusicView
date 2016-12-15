@@ -1,8 +1,11 @@
 # MiniMusicView
 A music player widget to add custom layout.
 ##ScreenShot
-![](https://github.com/henry-blue/MiniMusicView/raw/master/default_bg_new.png)...
-![](https://github.com/henry-blue/MiniMusicView/raw/master/custom_bg_new.png)
+<p>
+<img src="default_img.jpg" width="40%" />
+&nbsp;&nbsp;&nbsp;
+<img src="custom_img.jpg" width="40%" />
+</p>
 ##Usage
 First you can add gradle dependency with command :
 ```groovy
@@ -28,6 +31,7 @@ To add gradle dependency you need to open build.gradle (in your app folder,not i
 ```
    mMusicView = (MiniMusicView) findViewById(R.id.mmv_music);
    mMusicView.setTitleText("music name");
+   mMusicView.setAuthor("singer name");
    mMusicView.startPlayMusic("music url");
    
    // Or through the new way to create view object
@@ -79,7 +83,12 @@ Achieve the effect of the first picture above.
             public void onError() {
                 Log.i(TAG, "start play music error");
             }
-
+            
+            @Override
+            public void onInfo(int what, int extra) {
+                Log.i(TAG, "start play_mini_music music info");
+            }
+            
             @Override
             public void onMusicPlayComplete() {
                 Log.i(TAG, "start play music completed");
