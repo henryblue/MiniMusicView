@@ -9,6 +9,7 @@ import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 
 
@@ -36,6 +37,7 @@ public class MediaService extends Service implements MediaPlayer.OnCompletionLis
     private String mPlayUrl;
     private static ProgressTask mProgressTask;
     private boolean mIsStart = false;
+    private LocalBroadcastManager mLocalBroadcastManager;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -59,7 +61,8 @@ public class MediaService extends Service implements MediaPlayer.OnCompletionLis
             mMusicServiceReceiver = new MusicServiceReceiver();
             IntentFilter filter = new IntentFilter();
             filter.addAction(MUSIC_SERVICE_ACTION);
-            registerReceiver(mMusicServiceReceiver, filter);
+            mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
+            mLocalBroadcastManager.registerReceiver(mMusicServiceReceiver, filter);
         }
     }
 
@@ -112,7 +115,7 @@ public class MediaService extends Service implements MediaPlayer.OnCompletionLis
     @Override
     public void onDestroy() {
         stopMusic();
-        unregisterReceiver(mMusicServiceReceiver);
+        mLocalBroadcastManager.unregisterReceiver(mMusicServiceReceiver);
         if (mProgressTask != null) {
             mProgressTask.stopProgressUpdate();
             mProgressTask = null;
@@ -126,7 +129,7 @@ public class MediaService extends Service implements MediaPlayer.OnCompletionLis
         mediaIntent.setAction(MUSIC_SERVICE_ACTION);
         mediaIntent.putExtra("option", intent.getIntExtra("option", -1));
         mediaIntent.putExtra("playUrl", intent.getStringExtra("playUrl"));
-        sendBroadcast(mediaIntent);
+        mLocalBroadcastManager.sendBroadcast(mediaIntent);
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -135,7 +138,7 @@ public class MediaService extends Service implements MediaPlayer.OnCompletionLis
         Intent intent = new Intent();
         intent.setAction(MUSIC_STATE_ACTION);
         intent.putExtra("state", STATE_PLAY_COMPLETE);
-        sendBroadcast(intent);
+        mLocalBroadcastManager.sendBroadcast(intent);
     }
 
     @Override
@@ -150,7 +153,7 @@ public class MediaService extends Service implements MediaPlayer.OnCompletionLis
         intent.putExtra("state", STATE_PLAY_ERROR);
         intent.putExtra("what", what);
         intent.putExtra("extra", extra);
-        sendBroadcast(intent);
+        mLocalBroadcastManager.sendBroadcast(intent);
         return false;
     }
 
@@ -161,7 +164,7 @@ public class MediaService extends Service implements MediaPlayer.OnCompletionLis
         intent.putExtra("state", STATE_PLAY_INFO);
         intent.putExtra("what", what);
         intent.putExtra("extra", extra);
-        sendBroadcast(intent);
+        mLocalBroadcastManager.sendBroadcast(intent);
         return false;
     }
 
@@ -170,7 +173,7 @@ public class MediaService extends Service implements MediaPlayer.OnCompletionLis
         Intent intent = new Intent();
         intent.setAction(MUSIC_STATE_ACTION);
         intent.putExtra("state", STATE_SEEK_COMPLETE);
-        sendBroadcast(intent);
+        mLocalBroadcastManager.sendBroadcast(intent);
     }
 
     @Override
@@ -180,7 +183,7 @@ public class MediaService extends Service implements MediaPlayer.OnCompletionLis
         intent.setAction(MUSIC_STATE_ACTION);
         intent.putExtra("state", STATE_MUSIC_PREPARE);
         intent.putExtra("duration", mMediaPlayer.getDuration());
-        sendBroadcast(intent);
+        mLocalBroadcastManager.sendBroadcast(intent);
         mIsStart = true;
     }
 
@@ -238,12 +241,12 @@ public class MediaService extends Service implements MediaPlayer.OnCompletionLis
                 intent.putExtra("state", STATE_PROGRESS_UPDATE);
                 intent.putExtra("currentPos", mMediaPlayer.getCurrentPosition());
                 intent.putExtra("duration", mMediaPlayer.getDuration());
-                sendBroadcast(intent);
+                mLocalBroadcastManager.sendBroadcast(intent);
             }
             super.onProgressUpdate(values);
         }
 
-        public void stopProgressUpdate() {
+        void stopProgressUpdate() {
             mIsUpdate = false;
         }
     }

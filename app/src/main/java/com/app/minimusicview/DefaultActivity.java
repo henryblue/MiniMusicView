@@ -19,7 +19,7 @@ public class DefaultActivity extends AppCompatActivity {
         mMusicView.setTitleText("前前前世");
         mMusicView.setAuthor("RADWIMPS");
         mMusicView.setIconDrawable(ContextCompat.getDrawable(DefaultActivity.this, R.drawable.img_bg));
-        mMusicView.startPlayMusic("http://up.haoduoge.com:82/mp3/2016-10-07/1475810104.mp3");
+        mMusicView.startPlayMusic("http://up.haoduoge.com:82/mp3/2016-10-21/1477053081.mp3");
 
         mMusicView.setOnNextBtnClickListener(new MiniMusicView.OnNextButtonClickListener() {
             @Override
@@ -35,7 +35,7 @@ public class DefaultActivity extends AppCompatActivity {
                     mMusicView.setTitleText("前前前世");
                     mMusicView.setAuthor("RADWIMPS");
                     mMusicView.setIconDrawable(ContextCompat.getDrawable(DefaultActivity.this, R.drawable.img_bg));
-                    mMusicView.startPlayMusic("http://up.haoduoge.com:82/mp3/2016-10-07/1475810104.mp3");
+                    mMusicView.startPlayMusic("http://up.haoduoge.com:82/mp3/2016-10-21/1477053081.mp3");
                     isChange = false;
                 }
             }

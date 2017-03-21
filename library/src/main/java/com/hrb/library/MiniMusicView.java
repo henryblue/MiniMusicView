@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
@@ -24,6 +25,7 @@ import android.widget.Toast;
 
 public class MiniMusicView extends FrameLayout {
     private final String TAG = "MiniMusicView";
+    private final LocalBroadcastManager mLocalBroadcastManager;
     private Context mContext;
     private ViewStub mViewStub;
     private RelativeLayout mLayout;
@@ -60,6 +62,7 @@ public class MiniMusicView extends FrameLayout {
         mIsAddView = false;
         mIsPlay = true;
         mIsPlayComplete = false;
+        mLocalBroadcastManager = LocalBroadcastManager.getInstance(context);
         initView();
         initAttributeSet(attrs);
     }
@@ -135,14 +138,14 @@ public class MiniMusicView extends FrameLayout {
         mMusicUpdateReceiver = new MusicStateUpdateReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(MediaService.MUSIC_STATE_ACTION);
-        mContext.registerReceiver(mMusicUpdateReceiver, filter);
+        mLocalBroadcastManager.registerReceiver(mMusicUpdateReceiver, filter);
         registerHeadsetPlugReceiver();
     }
 
     private void registerHeadsetPlugReceiver() {
         mHeadsetPlugReceiver = new HeadsetPlugReceiver();
         IntentFilter intentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
-        mContext.registerReceiver(mHeadsetPlugReceiver, intentFilter);
+        mLocalBroadcastManager.registerReceiver(mHeadsetPlugReceiver, intentFilter);
     }
 
     private void controlBtnClick() {
@@ -216,7 +219,7 @@ public class MiniMusicView extends FrameLayout {
             playIntent.setAction(MediaService.MUSIC_SERVICE_ACTION);
             playIntent.putExtra("option", MediaService.OPTION_PLAY);
             playIntent.putExtra("playUrl", path);
-            mContext.sendBroadcast(playIntent);
+            mLocalBroadcastManager.sendBroadcast(playIntent);
         }
         Log.d(TAG, "startPlayMusic: [ " + this.hashCode() + " ]");
     }
@@ -227,7 +230,7 @@ public class MiniMusicView extends FrameLayout {
             mResumeIntent.setAction(MediaService.MUSIC_SERVICE_ACTION);
             mResumeIntent.putExtra("option", MediaService.OPTION_CONTINUE);
         }
-        mContext.sendBroadcast(mResumeIntent);
+        mLocalBroadcastManager.sendBroadcast(mResumeIntent);
         Log.d(TAG, "resumePlayMusic: [ " + this.hashCode() + " ]");
     }
 
@@ -237,7 +240,7 @@ public class MiniMusicView extends FrameLayout {
             mPauseIntent.setAction(MediaService.MUSIC_SERVICE_ACTION);
             mPauseIntent.putExtra("option", MediaService.OPTION_PAUSE);
         }
-        mContext.sendBroadcast(mPauseIntent);
+        mLocalBroadcastManager.sendBroadcast(mPauseIntent);
         Log.d(TAG, "pausePlayMusic: [ " + this.hashCode() + " ]");
     }
 
@@ -246,7 +249,7 @@ public class MiniMusicView extends FrameLayout {
         intent.setAction(MediaService.MUSIC_SERVICE_ACTION);
         intent.putExtra("option", MediaService.OPTION_SEEK);
         intent.putExtra("seekPos", pos);
-        mContext.sendBroadcast(intent);
+        mLocalBroadcastManager.sendBroadcast(intent);
         Log.d(TAG, "seekToMusic: pos = " + pos);
     }
 
@@ -255,11 +258,12 @@ public class MiniMusicView extends FrameLayout {
             mContext.stopService(mServiceIntent);
         }
         if (mMusicUpdateReceiver != null) {
-            mContext.unregisterReceiver(mMusicUpdateReceiver);
+            mLocalBroadcastManager.unregisterReceiver(mMusicUpdateReceiver);
         }
         if (mHeadsetPlugReceiver != null) {
-            mContext.unregisterReceiver(mHeadsetPlugReceiver);
+            mLocalBroadcastManager.unregisterReceiver(mHeadsetPlugReceiver);
         }
+        mContext = null;
         Log.d(TAG, "stopPlayMusic: [ " + hashCode() + " ]");
     }
 
