@@ -15,6 +15,7 @@ dependencies {
    }
 
 ```
+
 To add gradle dependency you need to open build.gradle (in your app folder,not in a project folder) then copy and add the dependencies there in the dependencies block;
 
 ###Use default layout
