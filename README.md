@@ -1,6 +1,7 @@
 # MiniMusicView
 A music player widget to add custom layout.
-##ScreenShot
+
+## ScreenShot
 <p>
 <img src="default_img.jpg" width="40%" />
 &nbsp;&nbsp;&nbsp;
