@@ -6,7 +6,8 @@ A music player widget to add custom layout.
 &nbsp;&nbsp;&nbsp;
 <img src="custom_img.jpg" width="40%" />
 </p>
-##Usage
+
+## Usage
 First you can add gradle dependency with command :
 ```groovy
 dependencies {
@@ -18,7 +19,7 @@ dependencies {
 
 To add gradle dependency you need to open build.gradle (in your app folder,not in a project folder) then copy and add the dependencies there in the dependencies block;
 
-###Use default layout
+### Use default layout
 
 1.Add MiniMusicView in your layout
 ```
@@ -51,7 +52,7 @@ To add gradle dependency you need to open build.gradle (in your app folder,not i
 ```
 Achieve the effect of the first picture above.
 
-###Use custom layout
+### Use custom layout
 1.Add MiniMusicView in your layout
 ```
     <com.hrb.library.MiniMusicView
@@ -112,7 +113,7 @@ Achieve the effect of the first picture above.
         });
 ```
 
-##License
+## License
 
 ```
 Copyright 2016 henryblue
