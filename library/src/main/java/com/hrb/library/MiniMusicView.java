@@ -2,15 +2,19 @@ package com.hrb.library;
 
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
@@ -23,7 +27,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MiniMusicView extends FrameLayout {
+public class MiniMusicView extends FrameLayout implements MediaService.IMediaStateListener, ServiceConnection {
     private final String TAG = "MiniMusicView";
     private final LocalBroadcastManager mLocalBroadcastManager;
     private Context mContext;
@@ -36,17 +40,15 @@ public class MiniMusicView extends FrameLayout {
     private TextView mMusicAuthor;
     private ProgressBar mProgressBar;
     private boolean mIsAddView;
-    private Intent mServiceIntent;
-    private Intent mPauseIntent;
-    private Intent mResumeIntent;
     private boolean mIsPlay;
-    private MusicStateUpdateReceiver mMusicUpdateReceiver;
     private OnMusicStateListener mMusicStateListener;
     private OnNextButtonClickListener mNextButtonClickListener;
     private HeadsetPlugReceiver mHeadsetPlugReceiver;
     private int mMusicDuration;
     private boolean mIsPlayComplete;
     private String mCurPlayUrl;
+
+    private MediaService mediaService;
 
     public MiniMusicView(Context context) {
         this(context, null);
@@ -135,14 +137,6 @@ public class MiniMusicView extends FrameLayout {
     }
 
     private void initReceiver() {
-        mMusicUpdateReceiver = new MusicStateUpdateReceiver();
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(MediaService.MUSIC_STATE_ACTION);
-        mLocalBroadcastManager.registerReceiver(mMusicUpdateReceiver, filter);
-        registerHeadsetPlugReceiver();
-    }
-
-    private void registerHeadsetPlugReceiver() {
         mHeadsetPlugReceiver = new HeadsetPlugReceiver();
         IntentFilter intentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
         mLocalBroadcastManager.registerReceiver(mHeadsetPlugReceiver, intentFilter);
@@ -209,57 +203,40 @@ public class MiniMusicView extends FrameLayout {
         mCurPlayUrl = path;
         changeLoadingMusicState(true);
         changeControlBtnState(true);
-        if (mServiceIntent == null) {
-            mServiceIntent = new Intent(mContext, MediaService.class);
-            mServiceIntent.putExtra("option", MediaService.OPTION_PLAY);
-            mServiceIntent.putExtra("playUrl", path);
-            mContext.startService(mServiceIntent);
+        if (mediaService == null) {
+            // bind service
+            Intent intent = new Intent(mContext, MediaService.class);
+            mContext.bindService(intent, MiniMusicView.this, Context.BIND_AUTO_CREATE);
         } else {
-            Intent playIntent = new Intent();
-            playIntent.setAction(MediaService.MUSIC_SERVICE_ACTION);
-            playIntent.putExtra("option", MediaService.OPTION_PLAY);
-            playIntent.putExtra("playUrl", path);
-            mLocalBroadcastManager.sendBroadcast(playIntent);
+            mediaService.playMusic(mCurPlayUrl);
         }
         Log.d(TAG, "startPlayMusic: [ " + this.hashCode() + " ]");
     }
 
     public void resumePlayMusic() {
-        if (mResumeIntent == null) {
-            mResumeIntent = new Intent();
-            mResumeIntent.setAction(MediaService.MUSIC_SERVICE_ACTION);
-            mResumeIntent.putExtra("option", MediaService.OPTION_CONTINUE);
+        if (mediaService != null) {
+            mediaService.resumeMusic(mCurPlayUrl);
         }
-        mLocalBroadcastManager.sendBroadcast(mResumeIntent);
         Log.d(TAG, "resumePlayMusic: [ " + this.hashCode() + " ]");
     }
 
     public void pausePlayMusic() {
-        if (mPauseIntent == null) {
-            mPauseIntent = new Intent();
-            mPauseIntent.setAction(MediaService.MUSIC_SERVICE_ACTION);
-            mPauseIntent.putExtra("option", MediaService.OPTION_PAUSE);
+        if (mediaService != null) {
+            mediaService.pauseMusic();
         }
-        mLocalBroadcastManager.sendBroadcast(mPauseIntent);
         Log.d(TAG, "pausePlayMusic: [ " + this.hashCode() + " ]");
     }
 
     public void seekToMusic(int pos) {
-        Intent intent = new Intent();
-        intent.setAction(MediaService.MUSIC_SERVICE_ACTION);
-        intent.putExtra("option", MediaService.OPTION_SEEK);
-        intent.putExtra("seekPos", pos);
-        mLocalBroadcastManager.sendBroadcast(intent);
+        if (mediaService != null) {
+            mediaService.seekToMusic(pos);
+        }
         Log.d(TAG, "seekToMusic: pos = " + pos);
     }
 
     public void stopPlayMusic() {
-        if (mServiceIntent != null) {
-            mContext.stopService(mServiceIntent);
-        }
-        if (mMusicUpdateReceiver != null) {
-            mLocalBroadcastManager.unregisterReceiver(mMusicUpdateReceiver);
-        }
+        mContext.unbindService(MiniMusicView.this);
+
         if (mHeadsetPlugReceiver != null) {
             mLocalBroadcastManager.unregisterReceiver(mHeadsetPlugReceiver);
         }
@@ -329,6 +306,76 @@ public class MiniMusicView extends FrameLayout {
         return mMusicDuration;
     }
 
+    @Override
+    public void onPrepared(int duration) {
+        mMusicDuration = duration;
+        if (mMusicStateListener != null) {
+            mMusicStateListener.onPrepared(mMusicDuration);
+        }
+        changeLoadingMusicState(false);
+        setProgressMax(mMusicDuration);
+        Log.d(TAG, "onPrepared: STATE_MUSIC_PREPARE");
+    }
+
+    @Override
+    public void onProgressUpdate(int currentPos, int duration) {
+        if (mMusicStateListener != null) {
+            mMusicStateListener.onProgressUpdate(duration, currentPos);
+        }
+        setProgress(currentPos);
+    }
+
+    @Override
+    public void onSeekComplete() {
+        if (mMusicStateListener != null) {
+            mMusicStateListener.onSeekComplete();
+        }
+        Log.d(TAG, "onSeekComplete: STATE_SEEK_COMPLETE");
+    }
+
+    @Override
+    public void onCompletion() {
+        mIsPlayComplete = true;
+        changeControlBtnState(false);
+        if (mMusicStateListener != null) {
+            mMusicStateListener.onMusicPlayComplete();
+        }
+        Log.d(TAG, "onCompletion: STATE_PLAY_COMPLETE");
+    }
+
+    @Override
+    public boolean onInfo(int what, int extra) {
+        if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START) {
+            changeLoadingMusicState(true);
+            Log.i(TAG, "MEDIA_INFO_BUFFERING_START");
+        } else if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END) {
+            changeLoadingMusicState(false);
+            Log.i(TAG, "MEDIA_INFO_BUFFERING_END");
+        }
+        if (mMusicStateListener != null) {
+            mMusicStateListener.onInfo(what, extra);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onError(int what, int extra) {
+        if (mMusicStateListener != null) {
+            mMusicStateListener.onError(what, extra);
+        }
+        if (!mIsAddView) {
+            Toast.makeText(mContext, getResources().getString(R.string.load_error),
+                    Toast.LENGTH_SHORT).show();
+            mLoadMusic.setVisibility(View.GONE);
+            if (mControlBtn.getVisibility() != View.VISIBLE) {
+                mControlBtn.setVisibility(View.VISIBLE);
+            }
+            changeControlBtnState(false);
+        }
+        Log.d(TAG, "onError: STATE_PLAY_ERROR");
+        return false;
+    }
+
     public interface OnMusicStateListener {
         void onPrepared(int duration);
         void onError(int what, int extra);
@@ -339,83 +386,23 @@ public class MiniMusicView extends FrameLayout {
         void onHeadsetPullOut();
     }
 
-    public interface OnNextButtonClickListener {
-        void OnClick();
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder service) {
+        Log.i(TAG, "onServiceConnected: [ " + this.hashCode() + " ]");
+        MediaService.MediaBinder mediaBinder = (MediaService.MediaBinder) service;
+        mediaService = mediaBinder.getService();
+        mediaService.setMediaStateListener(MiniMusicView.this);
+        if (!TextUtils.isEmpty(mCurPlayUrl) && mediaService != null) {
+            mediaService.playMusic(mCurPlayUrl);
+        }
     }
 
-    public class MusicStateUpdateReceiver extends BroadcastReceiver {
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+    }
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            int state = intent.getIntExtra("state", -1);
-            switch (state) {
-                case MediaService.STATE_PLAY_COMPLETE:
-                    mIsPlayComplete = true;
-                    changeControlBtnState(false);
-                    if (mMusicStateListener != null) {
-                        mMusicStateListener.onMusicPlayComplete();
-                    }
-                    Log.d(TAG, "onReceive: STATE_PLAY_COMPLETE");
-                    break;
-                case MediaService.STATE_PLAY_ERROR:
-                    int what = intent.getIntExtra("what", 0);
-                    int extra = intent.getIntExtra("extra", 0);
-                    if (mMusicStateListener != null) {
-                        mMusicStateListener.onError(what, extra);
-                    }
-                    if (!mIsAddView) {
-                        Toast.makeText(mContext, getResources().getString(R.string.load_error),
-                                Toast.LENGTH_SHORT).show();
-                        mLoadMusic.setVisibility(View.GONE);
-                        if (mControlBtn.getVisibility() != View.VISIBLE) {
-                            mControlBtn.setVisibility(View.VISIBLE);
-                        }
-                        changeControlBtnState(false);
-                    }
-                    Log.d(TAG, "onReceive: STATE_PLAY_ERROR");
-                    break;
-                case MediaService.STATE_PLAY_INFO: {
-                    int what1 = intent.getIntExtra("what", 0);
-                    int extra1 = intent.getIntExtra("extra", 0);
-                    if (what1 == MediaPlayer.MEDIA_INFO_BUFFERING_START) {
-                        changeLoadingMusicState(true);
-                        Log.i(TAG, "MEDIA_INFO_BUFFERING_START");
-                    } else if (what1 == MediaPlayer.MEDIA_INFO_BUFFERING_END) {
-                        changeLoadingMusicState(false);
-                        Log.i(TAG, "MEDIA_INFO_BUFFERING_END");
-                    }
-                    if (mMusicStateListener != null) {
-                        mMusicStateListener.onInfo(what1, extra1);
-                    }
-                }
-                    break;
-                case MediaService.STATE_SEEK_COMPLETE:
-                    if (mMusicStateListener != null) {
-                        mMusicStateListener.onSeekComplete();
-                    }
-                    Log.d(TAG, "onReceive: STATE_SEEK_COMPLETE");
-                    break;
-                case MediaService.STATE_MUSIC_PREPARE:
-                    mMusicDuration = intent.getIntExtra("duration", -1);
-                    if (mMusicStateListener != null) {
-                        mMusicStateListener.onPrepared(mMusicDuration);
-                    }
-                    changeLoadingMusicState(false);
-                    setProgressMax(mMusicDuration);
-                    Log.d(TAG, "onReceive: STATE_MUSIC_PREPARE");
-                    break;
-                case MediaService.STATE_PROGRESS_UPDATE:
-                    int duration = intent.getIntExtra("duration", 0);
-                    int currentPos = intent.getIntExtra("currentPos", 0);
-                    if (mMusicStateListener != null) {
-                        mMusicStateListener.onProgressUpdate(duration, currentPos);
-                    }
-                    setProgress(currentPos);
-                    break;
-                default:
-                    break;
-            }
-        }
+    public interface OnNextButtonClickListener {
+        void OnClick();
     }
 
     private class HeadsetPlugReceiver extends BroadcastReceiver {

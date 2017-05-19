@@ -1,15 +1,12 @@
 package com.hrb.library;
 
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
+import android.os.Binder;
 import android.os.IBinder;
 import android.os.SystemClock;
-import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 
 
@@ -17,31 +14,25 @@ public class MediaService extends Service implements MediaPlayer.OnCompletionLis
         MediaPlayer.OnErrorListener, MediaPlayer.OnBufferingUpdateListener,
         MediaPlayer.OnSeekCompleteListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnInfoListener {
 
-    public static final int OPTION_PLAY = 0;
-    public static final int OPTION_PAUSE = 1;
-    public static final int OPTION_CONTINUE = 2;
-    public static final int OPTION_SEEK = 3;
-    public static final int STATE_PLAY_COMPLETE = 4;
-    public static final int STATE_PLAY_ERROR = 5;
-    public static final int STATE_SEEK_COMPLETE = 6;
-    public static final int STATE_PROGRESS_UPDATE = 7;
-    public static final int STATE_MUSIC_PREPARE = 8;
-    public static final int STATE_PLAY_INFO = 9;
-
-    public static final String MUSIC_SERVICE_ACTION = "com.mini.media.service.action";
-    public static final String MUSIC_STATE_ACTION = "com.mini.media.music.state.action";
-
     private static MediaPlayer mMediaPlayer;
-    private MusicServiceReceiver mMusicServiceReceiver;
     private int mCurrPlayPosition = 0;
     private String mPlayUrl;
     private static ProgressTask mProgressTask;
     private boolean mIsStart = false;
-    private LocalBroadcastManager mLocalBroadcastManager;
+
+    private MediaBinder mBinder = new MediaBinder();
+    private IMediaStateListener mMediaStateListener;
+
+    class MediaBinder extends Binder {
+
+        MediaService getService(){
+            return MediaService.this;
+        }
+    }
 
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return mBinder;
     }
 
     @Override
@@ -56,17 +47,9 @@ public class MediaService extends Service implements MediaPlayer.OnCompletionLis
             mMediaPlayer.setOnPreparedListener(this);
             mMediaPlayer.setOnInfoListener(this);
         }
-
-        if (mMusicServiceReceiver == null) {
-            mMusicServiceReceiver = new MusicServiceReceiver();
-            IntentFilter filter = new IntentFilter();
-            filter.addAction(MUSIC_SERVICE_ACTION);
-            mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
-            mLocalBroadcastManager.registerReceiver(mMusicServiceReceiver, filter);
-        }
     }
 
-    private void playMusic(String path) {
+    public void playMusic(String path) {
         if (mMediaPlayer != null) {
             try {
                 mMediaPlayer.reset();
@@ -82,13 +65,19 @@ public class MediaService extends Service implements MediaPlayer.OnCompletionLis
         }
     }
 
-    private void pauseMusic() {
+
+    public void setMediaStateListener(IMediaStateListener listener) {
+        mMediaStateListener = listener;
+    }
+
+    public void pauseMusic() {
+        mCurrPlayPosition = mMediaPlayer.getCurrentPosition();
         if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
             mMediaPlayer.pause();
         }
     }
 
-    private void resumeMusic(String playPath) {
+    public void resumeMusic(String playPath) {
         playerToPosition(mCurrPlayPosition);
         if (TextUtils.isEmpty(mPlayUrl)) {
             mPlayUrl = playPath;
@@ -115,7 +104,6 @@ public class MediaService extends Service implements MediaPlayer.OnCompletionLis
     @Override
     public void onDestroy() {
         stopMusic();
-        mLocalBroadcastManager.unregisterReceiver(mMusicServiceReceiver);
         if (mProgressTask != null) {
             mProgressTask.stopProgressUpdate();
             mProgressTask = null;
@@ -125,20 +113,14 @@ public class MediaService extends Service implements MediaPlayer.OnCompletionLis
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Intent mediaIntent = new Intent();
-        mediaIntent.setAction(MUSIC_SERVICE_ACTION);
-        mediaIntent.putExtra("option", intent.getIntExtra("option", -1));
-        mediaIntent.putExtra("playUrl", intent.getStringExtra("playUrl"));
-        mLocalBroadcastManager.sendBroadcast(mediaIntent);
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
-        Intent intent = new Intent();
-        intent.setAction(MUSIC_STATE_ACTION);
-        intent.putExtra("state", STATE_PLAY_COMPLETE);
-        mLocalBroadcastManager.sendBroadcast(intent);
+        if (mMediaStateListener != null) {
+            mMediaStateListener.onCompletion();
+        }
     }
 
     @Override
@@ -148,76 +130,39 @@ public class MediaService extends Service implements MediaPlayer.OnCompletionLis
 
     @Override
     public boolean onError(MediaPlayer mediaPlayer, int what, int extra) {
-        Intent intent = new Intent();
-        intent.setAction(MUSIC_STATE_ACTION);
-        intent.putExtra("state", STATE_PLAY_ERROR);
-        intent.putExtra("what", what);
-        intent.putExtra("extra", extra);
-        mLocalBroadcastManager.sendBroadcast(intent);
+        if (mMediaStateListener != null) {
+            mMediaStateListener.onError(what, extra);
+        }
         return false;
     }
 
     @Override
     public boolean onInfo(MediaPlayer mp, int what, int extra) {
-        Intent intent = new Intent();
-        intent.setAction(MUSIC_STATE_ACTION);
-        intent.putExtra("state", STATE_PLAY_INFO);
-        intent.putExtra("what", what);
-        intent.putExtra("extra", extra);
-        mLocalBroadcastManager.sendBroadcast(intent);
+        if (mMediaStateListener != null) {
+            mMediaStateListener.onInfo(what, extra);
+        }
         return false;
     }
 
     @Override
     public void onSeekComplete(MediaPlayer mediaPlayer) {
-        Intent intent = new Intent();
-        intent.setAction(MUSIC_STATE_ACTION);
-        intent.putExtra("state", STATE_SEEK_COMPLETE);
-        mLocalBroadcastManager.sendBroadcast(intent);
+        if (mMediaStateListener != null) {
+            mMediaStateListener.onSeekComplete();
+        }
     }
 
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
         mediaPlayer.start();
-        Intent intent = new Intent();
-        intent.setAction(MUSIC_STATE_ACTION);
-        intent.putExtra("state", STATE_MUSIC_PREPARE);
-        intent.putExtra("duration", mMediaPlayer.getDuration());
-        mLocalBroadcastManager.sendBroadcast(intent);
+        if (mMediaStateListener != null) {
+            mMediaStateListener.onPrepared(mMediaPlayer.getDuration());
+        }
         mIsStart = true;
     }
 
-    private void seekToMusic(int pos) {
+    public void seekToMusic(int pos) {
         if (mMediaPlayer != null && mIsStart && pos < mMediaPlayer.getDuration()) {
             mMediaPlayer.seekTo(pos);
-        }
-    }
-
-    private class MusicServiceReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            int option = intent.getIntExtra("option", -1);
-            switch (option) {
-                case OPTION_PLAY:
-                    mPlayUrl = intent.getStringExtra("playUrl");
-                    playMusic(mPlayUrl);
-                    break;
-                case OPTION_PAUSE:
-                    mCurrPlayPosition = mMediaPlayer.getCurrentPosition();
-                    pauseMusic();
-                    break;
-                case OPTION_CONTINUE:
-                    String path = intent.getStringExtra("playUrl");
-                    resumeMusic(path);
-                    break;
-                case OPTION_SEEK:
-                    int pos = intent.getIntExtra("seekPos", 0);
-                    seekToMusic(pos);
-                    break;
-                default:
-                    break;
-            }
         }
     }
 
@@ -236,12 +181,10 @@ public class MediaService extends Service implements MediaPlayer.OnCompletionLis
         @Override
         protected void onProgressUpdate(Void... values) {
             if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
-                Intent intent = new Intent();
-                intent.setAction(MUSIC_STATE_ACTION);
-                intent.putExtra("state", STATE_PROGRESS_UPDATE);
-                intent.putExtra("currentPos", mMediaPlayer.getCurrentPosition());
-                intent.putExtra("duration", mMediaPlayer.getDuration());
-                mLocalBroadcastManager.sendBroadcast(intent);
+                if (mMediaStateListener != null) {
+                    mMediaStateListener.onProgressUpdate(mMediaPlayer.getCurrentPosition(),
+                            mMediaPlayer.getDuration());
+                }
             }
             super.onProgressUpdate(values);
         }
@@ -249,5 +192,14 @@ public class MediaService extends Service implements MediaPlayer.OnCompletionLis
         void stopProgressUpdate() {
             mIsUpdate = false;
         }
+    }
+
+    interface IMediaStateListener {
+        void onPrepared(int duration);
+        void onProgressUpdate(int currentPos, int duration);
+        void onSeekComplete();
+        void onCompletion();
+        boolean onInfo(int what, int extra);
+        boolean onError(int what, int extra);
     }
 }
