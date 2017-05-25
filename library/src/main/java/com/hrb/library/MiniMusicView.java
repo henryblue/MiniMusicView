@@ -27,9 +27,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import static android.R.attr.filter;
+
 public class MiniMusicView extends FrameLayout implements MediaService.IMediaStateListener, ServiceConnection {
     private final String TAG = "MiniMusicView";
-    private final LocalBroadcastManager mLocalBroadcastManager;
     private Context mContext;
     private ViewStub mViewStub;
     private RelativeLayout mLayout;
@@ -64,7 +65,6 @@ public class MiniMusicView extends FrameLayout implements MediaService.IMediaSta
         mIsAddView = false;
         mIsPlay = true;
         mIsPlayComplete = false;
-        mLocalBroadcastManager = LocalBroadcastManager.getInstance(context);
         initView();
         initAttributeSet(attrs);
     }
@@ -137,9 +137,12 @@ public class MiniMusicView extends FrameLayout implements MediaService.IMediaSta
     }
 
     private void initReceiver() {
-        mHeadsetPlugReceiver = new HeadsetPlugReceiver();
-        IntentFilter intentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
-        mLocalBroadcastManager.registerReceiver(mHeadsetPlugReceiver, intentFilter);
+        if (mHeadsetPlugReceiver == null) {
+            mHeadsetPlugReceiver = new HeadsetPlugReceiver();
+        }
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+        mContext.registerReceiver(mHeadsetPlugReceiver, intentFilter);
     }
 
     private void controlBtnClick() {
@@ -238,7 +241,7 @@ public class MiniMusicView extends FrameLayout implements MediaService.IMediaSta
         mContext.unbindService(MiniMusicView.this);
 
         if (mHeadsetPlugReceiver != null) {
-            mLocalBroadcastManager.unregisterReceiver(mHeadsetPlugReceiver);
+            mContext.unregisterReceiver(mHeadsetPlugReceiver);
         }
         mContext = null;
         Log.d(TAG, "stopPlayMusic: [ " + hashCode() + " ]");
@@ -415,8 +418,8 @@ public class MiniMusicView extends FrameLayout implements MediaService.IMediaSta
                     if (mMusicStateListener != null) {
                         mMusicStateListener.onHeadsetPullOut();
                     }
+                    pausePlayMusic();
                     if (!mIsAddView) {
-                        pausePlayMusic();
                         changeControlBtnState(false);
                     }
                 }

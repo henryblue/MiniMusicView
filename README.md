@@ -13,7 +13,7 @@ First you can add gradle dependency with command :
 ```groovy
 dependencies {
     ......
-    compile 'com.henryblue.minimusicview:library:0.9.8'
+    compile 'com.henryblue.minimusicview:library:1.0.1'
    }
 
 ```
